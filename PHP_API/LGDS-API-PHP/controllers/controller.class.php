@@ -12,41 +12,54 @@ class Controller
 {
       function main()
       {
-            $serverResult = new HTTP_Response();
+            try {
             
-            //Formamos el nombre del Controlador o en su defecto, tomamos que es el IndexController
-            if (!empty($_GET['controller']))
-                  $controllerName = $_GET['controller'];
-            else
-                  $controllerName = "index";
+                  $serverResult = new HTTP_Response();
+                  
+                  //Formamos el nombre del Controlador o en su defecto, tomamos que es el IndexController
+                  if (!empty($_GET['controller']))
+                        $controllerName = $_GET['controller'];
+                  else
+                        $controllerName = "index";
 
-            //Lo mismo sucede con las acciones, si no hay acción, tomamos index como acción
-            if(!empty($_GET['action']))
-                  $actionName = $_GET['action'];
-            else
-                  $actionName = "list";
+                  //Lo mismo sucede con las acciones, si no hay acción, tomamos index como acción
+                  if(!empty($_GET['action']))
+                        $actionName = $_GET['action'];
+                  else
+                        $actionName = "list";
 
-            $controllerPath = "controllers/$controllerName.controller.php";
+                  $controllerPath = "controllers/$controllerName.controller.php";
 
-            //Incluimos el fichero que contiene nuestra clase controladora solicitada
-            if(file_exists($controllerPath)){
+                  //Incluimos el fichero que contiene nuestra clase controladora solicitada
+                  if(file_exists($controllerPath)){
 
-                  require_once $controllerPath;
+                        require_once $controllerPath;
 
-                  try {
-                        $controllerName = $controllerName . "Controller";
-                        $controller = new $controllerName();
-                        call_user_func(array($controller, $actionName));
-                  } 
-                  catch (\Throwable $th) {
+                        try {
+
+                              $controllerName = $controllerName . "Controller";
+                              $controller = new $controllerName();
+                              if (is_callable(array($controller, $actionName)) == false){
+                                    $serverResult->Error(495, "Ah ocurrido un error al realizar la peticion al servidor");
+                              }
+                              else{
+                                    call_user_func(array($controller, $actionName));
+                              }
+                        } 
+                        catch (\Throwable $th) {
+                              $serverResult->NotFound(404,"Ah ocurrido un error al realizar la peticion al servidor");
+                              echo json_encode($serverResult);
+                        }
+
+                  }
+                  else{
                         $serverResult->NotFound(404,"el controlador requerido no existe - 404 not found");
                         echo json_encode($serverResult);
                   }
-
-            }
-            else{
-                  $serverResult->NotFound(404,$controllerPath);
-                  echo json_encode($serverResult);
+            } 
+            catch (\Throwable $th) {
+                  $serverResult = new HTTP_Response();
+                  $serverResult->Error(500, "Ah ocurrido un error inesperado");
             }
 
       }
