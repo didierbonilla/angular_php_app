@@ -1,9 +1,8 @@
 <?php
-
+/*
 namespace helpers\conection;
-
 use mysqli;
-
+*/
 class conection
 {
     private string $servidor = "localhost";

@@ -1,10 +1,12 @@
 <?php
-
+/*
 namespace repositories\user;
 
 use mysqli;
 use models\user\user;
+*/
 
+//include_once("../models/UserViewModel.php");
 class userRepository{
     private mysqli $conection;
 
@@ -31,3 +33,4 @@ class userRepository{
         return $data;
     }
 }
+

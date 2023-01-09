@@ -1,6 +1,6 @@
 <?php
 
-namespace models\user;
+//namespace models\user;
 
     class user{
         public int $idusuario;

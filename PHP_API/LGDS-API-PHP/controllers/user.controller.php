@@ -1,10 +1,13 @@
 <?php
-
+/*
 namespace controllers\user;
 
 use services\GeneralServices\GeneralServices;
-
-class usersController
+*/
+/*
+require_once("../services/general.services.php");
+*/
+class userController
 {
     private GeneralServices $_GeneralServices;
     function __construct()

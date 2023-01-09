@@ -1,6 +1,6 @@
 <?php
 
-namespace helpers\HTTP_Response;
+//namespace helpers\HTTP_Response;
 class HTTP_Response {
 
     public int $Code = 200;

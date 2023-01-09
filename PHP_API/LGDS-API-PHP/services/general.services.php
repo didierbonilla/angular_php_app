@@ -1,13 +1,17 @@
 <?php
-
+/*
 namespace services\GeneralServices;
 
 use helpers\conection\conection;
 use helpers\HTTP_Response\HTTP_Response;
 use repositories\user\userRepository;
 use mysqli;
-
-
+*/
+/*
+require_once("../helpers/conection.class.php");
+require_once("../helpers/HTTP_Response.class.php");
+require_once("../repositories/user.respository.php");
+*/
 class GeneralServices{
 
     private mysqli $conection;
