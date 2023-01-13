@@ -18,8 +18,12 @@ class userRepository{
     
         $data = array();
         $query = 
-            "SELECT * FROM `usuarios` as usu
-            JOIN perfiles as per ON per.idperfil = usu.idperfil";
+            "SELECT
+                usua.*, muni.muni_descripcion, depa.depa_id, depa.depa_descripcion, rol.rol_descripcion
+            FROM `tblusuarios` as usua
+            JOIN tblroles as rol ON rol.rol_id = usua.rol_id
+            JOIN tblmunicipios as muni ON muni.muni_id = usua.muni_id
+            JOIN tbldepartamentos as depa ON depa.depa_id = muni.depa_id";
 
         if($stmt = $this->conection->query($query)){
 
@@ -35,38 +39,134 @@ class userRepository{
         return $data;
     }
 
-    function create(user $user){
-
-        $data = array();
-
-        if(count($this->find($user->idusuario)) > 0)
-            $data["response"]="!Ya existe un usuario con este ID!";
-        else{
-
-            $password = password_hash($user->password, PASSWORD_DEFAULT);
-            
-            $query="INSERT INTO `usuarios` (`idusuario`, `usuario`, `correoElect`, `telefonoU`, `idperfil`, `contraseña`) 
-                    VALUES 
-                        ('{$user->idusuario}', '{$user->idusuario}', '{$user->idusuario}', 
-                         '{$user->idusuario}', '{$user->idusuario}', '$password')";
-
-            if($this->conection->query($query)){
-                $data["status"]=true;
-            }
-            else $data["response"]="!Error al crear usuario!";
-        }
-
-    }
-
-    function find($id){
+    function find($value, $column="usua_id"){
 
         $users = $this->list();
-        $users_filter = array_filter($users, function($user) use ($id) {
-            return $user->idusuario == $id;
-        });
+        $users_filter = array();
+        foreach ($users as $user) {
+            if($user->$column == $value)
+                $users_filter[] = $user;
+        }
 
         return $users_filter;
     }
+
+    function create(user $user) : array{
+
+        /* json model
+        {
+            usua_dni:"",
+            usua_nombre:"",
+            usua_apellido:"",
+            usua_email:"",
+            usua_telefono:"",
+            muni_id:"",
+            rol_id:"",
+            usua_direccion:"",
+            usua_password:"",
+        }
+        */
+        $response = array();
+
+        $password = password_hash($user->usua_password, PASSWORD_DEFAULT);
+        $query = "CALL UDP_usuarios_INSERT(?,?,?,?,?,?,?,?,?)";
+
+        if($stmt = $this->conection->prepare($query)){
+            $stmt->bind_param(
+                "sssssiiss",
+                $user->usua_dni, $user->usua_nombre, $user->usua_apellido, $user->usua_email, $user->usua_telefono,
+                $user->muni_id, $user->rol_id, $user->usua_direccion, $password
+            );
+            $stmt->execute();
+            $stmt->bind_result($last_id);
+            $stmt->fetch();
+            $response["udp_inserted_id"] = $last_id;
+            $response["udp_code"] = 0;
+            $response["udp_message"] = "Usuario creado con exito";
+        } 
+        else {
+            $response["udp_code"] = $stmt->errno;
+            $response["udp_message"] = $stmt->error;
+        }
+
+        return $response;
+
+    }
+
+    function update($id, user $user) : array{
+
+        /* json model
+        {
+            usua_nombre:"",
+            usua_apellido:"",
+            usua_email:"",
+            usua_telefono:"",
+            muni_id:"",
+            rol_id:"",
+            usua_direccion:"",
+            usua_modifica:"",
+        }
+        */
+        $response = array();
+        $query = "CALL UDP_usuarios_UPDATE(?,?,?,?,?,?,?,?,?)";
+
+        if($stmt = $this->conection->prepare($query)){
+            $stmt->bind_param(
+                "issssiisi",
+                $id, $user->usua_nombre, $user->usua_apellido, $user->usua_email, $user->usua_telefono,
+                $user->muni_id, $user->rol_id, $user->usua_direccion, $user->usua_modifica
+            );
+            $stmt->execute();
+            $response["udp_code"] = 0;
+            $response["udp_message"] = "Usuario actualizado con exito";
+        } 
+        else {
+            $response["udp_code"] = $stmt->errno;
+            $response["udp_message"] = $stmt->error;
+        }
+
+        return $response;
+    }
+
+    function update_password($id, user $user){
+        $response = array();
+
+        $password = password_hash($user->usua_password, PASSWORD_DEFAULT);
+        $query = "UPDATE `tblusuarios` as usua SET usua.`usua_password`= ? WHERE usua.usua_id=?;";
+
+        if($stmt = $this->conection->prepare($query)){
+            $stmt->bind_param("ss",$password,$id);
+            $stmt->execute();
+            $response["udp_code"] = 0;
+            $response["udp_message"] = "Password actualizada con exito";
+        } 
+        else {
+            $response["udp_code"] = $stmt->errno;
+            $response["udp_message"] = $stmt->error;
+        }
+
+        return $response;
+    }
+
+    function setState($id, $state){
+        $response = array();
+
+        $query = "UPDATE `tblusuarios` as usua SET usua.`usua_activo`= ? WHERE usua.usua_id=?;";
+
+        if($stmt = $this->conection->prepare($query)){
+            $stmt->bind_param("is",$state,$id);
+            $stmt->execute();
+            $response["udp_code"] = 0;
+            $response["udp_message"] = "Estado de usuario actualizado con exito";
+        } 
+        else {
+            $response["udp_code"] = $stmt->errno;
+            $response["udp_message"] = $stmt->error;
+        }
+
+        return $response;
+    }
+
 }
 /*
 $pdo = new PDO("mysql:dbname=la_garita_web;host=localhost", "root", "");

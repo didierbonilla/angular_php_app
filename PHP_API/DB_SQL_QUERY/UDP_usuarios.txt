@@ -1,0 +1,60 @@
+---------------------------------------------- UDP_usuarios_INSERT ------------------------------------------------
+
+    USE la_garita_db
+
+    DELIMITER //
+    CREATE PROCEDURE UDP_usuarios_INSERT(
+        IN usua_dni varchar(15),
+        IN usua_nombre varchar(60),
+        IN usua_apellido varchar(60),
+        IN usua_email varchar(80),
+        IN usua_telefono varchar(20),
+        IN muni_id int,
+        IN rol_id int,
+        IN usua_direccion varchar(200),
+        IN usua_password varchar(400)
+    )
+    BEGIN
+        
+    INSERT INTO `tblusuarios`
+        (`usua_dni`, `usua_nombre`, `usua_apellido`, `usua_email`, `usua_telefono`, `muni_id`, `rol_id`, `usua_direccion`, `usua_password`) 
+    VALUES (usua_dni,usua_nombre,usua_apellido,usua_email,usua_telefono,muni_id,rol_id,usua_direccion,usua_password);
+
+    SELECT LAST_INSERT_ID() as last_id;
+        
+    END //
+    DELIMITER ;
+
+---------------------------------------------- UDP_usuarios_UPDATE ------------------------------------------------
+
+    USE la_garita_db
+
+    DELIMITER //
+    CREATE PROCEDURE UDP_usuarios_UPDATE(
+        IN usua_id int,
+        IN usua_nombre varchar(60),
+        IN usua_apellido varchar(60),
+        IN usua_email varchar(80),
+        IN usua_telefono varchar(20),
+        IN muni_id int,
+        IN rol_id int,
+        IN usua_direccion varchar(200),
+        IN usua_modifica int
+    )
+    BEGIN
+        
+    UPDATE `tblusuarios` as u
+    SET 
+        u.`usua_nombre`=usua_nombre,
+        u.`usua_apellido`=usua_apellido,
+        u.`usua_email`=usua_email,
+        u.`usua_telefono`=usua_telefono,
+        u.`muni_id`=muni_id,
+        u.`rol_id`=rol_id,
+        u.`usua_direccion`=usua_direccion,
+        u.`usua_modifica`=usua_modifica,
+        u.`usua_fechaModifica`=CURRENT_TIMESTAMP
+    WHERE u.`usua_id`=usua_id;
+        
+    END //
+    DELIMITER ;

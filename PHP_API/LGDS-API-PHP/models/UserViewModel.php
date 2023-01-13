@@ -1,35 +1,45 @@
 <?php
 
 //namespace models\user;
-
-    class user{
-        public int $idusuario;
-        public string $usuario;
-        public string $correoElect;
-        public string $telefonoU;
-        public string $password;
-        public string $nombreEmpresa;
-        public string $ubicacion;
-        public int $idperfil;
-        public string $perfil;
-        public string $usuarioModifica;
-        public string $fechaModifica;
-        public int $contadorRutas;
-        public int $contadorClientes;
+    class user{ 
+        public int $usua_id;
+        public ?string $usua_dni;
+        public ?string $usua_nombre;
+        public ?string $usua_apellido;
+        public ?string $usua_email;
+        public ?string $usua_telefono;
+        public int $muni_id;
+        public ?string $muni_descripcion;
+        public int $depa_id;
+        public ?string $depa_descripcion;
+        public int $rol_id;
+        public ?string $rol_descripcion;
+        public ?string $usua_direccion;
+        public ?string $usua_password = null;
+        public ?string $usua_fechaCreacion;
+        public int $usua_modifica;
+        public ?string $usua_fechaModifica;
+        public int $usua_activo;
 
         function __construct($user){
-            $this->idusuario = !isset($user["idusuario"]) ? null : $user["idusuario"];
-            $this->usuario = !isset($user["usuario"]) ? null : $user["usuario"];
-            $this->correoElect = !isset($user["correoElect"]) ? null : $user["correoElect"];
-            $this->telefonoU = !isset($user["telefonoU"]) ? null : $user["telefonoU"];
-            $this->nombreEmpresa = !isset($user["nombreEmpresa"]) ? null : $user["nombreEmpresa"];
-            $this->ubicacion = !isset($user["ubicacion"]) ? null : $user["ubicacion"];
-            $this->idperfil = !isset($user["idperfil"]) ? null : $user["idperfil"];
-            $this->perfil = !isset($user["perfil"]) ? null : $user["perfil"];
-            $this->usuarioModifica = !isset($user["usuarioModifica"]) ? null : $user["usuarioModifica"];
-            $this->fechaModifica = !isset($user["fechaModifica"]) ? null : $user["fechaModifica"];
-            $this->contadorRutas = !isset($user["contadorRutas"]) ? null : $user["contadorRutas"];
-            $this->contadorClientes = !isset($user["contadorClientes"]) ? null : $user["contadorClientes"];
+
+            $this->usua_id = !isset($user["usua_id"]) ? 0 : $user["usua_id"];
+            $this->usua_dni = !isset($user["usua_dni"]) ? null : $user["usua_dni"];
+            $this->usua_nombre = !isset($user["usua_nombre"]) ? null : $user["usua_nombre"];
+            $this->usua_apellido = !isset($user["usua_apellido"]) ? null : $user["usua_apellido"];
+            $this->usua_email = !isset($user["usua_email"]) ? null : $user["usua_email"];
+            $this->usua_telefono = !isset($user["usua_telefono"]) ? null : $user["usua_telefono"];
+            $this->rol_id = !isset($user["rol_id"]) ? 0 : $user["rol_id"];
+            $this->rol_descripcion = !isset($user["rol_descripcion"]) ? null : $user["rol_descripcion"];
+            $this->muni_id = !isset($user["muni_id"]) ? 0 : $user["muni_id"];
+            $this->muni_descripcion = !isset($user["muni_descripcion"]) ? null : $user["muni_descripcion"];
+            $this->depa_id = !isset($user["depa_id"]) ? 0 : $user["depa_id"];
+            $this->depa_descripcion = !isset($user["depa_descripcion"]) ? null : $user["depa_descripcion"];
+            $this->usua_direccion = !isset($user["usua_direccion"]) ? null : $user["usua_direccion"];
+            $this->usua_fechaCreacion = !isset($user["usua_fechaCreacion"]) ? null : $user["usua_fechaCreacion"];
+            $this->usua_modifica = !isset($user["usua_modifica"]) ? 0 : $user["usua_modifica"];
+            $this->usua_fechaModifica = !isset($user["usua_fechaModifica"]) ? 0 : $user["usua_fechaModifica"];
+            $this->usua_activo = !isset($user["usua_activo"]) ? 0 : $user["usua_activo"];
         }
 
     }

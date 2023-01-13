@@ -10,31 +10,28 @@ class HTTP_Response {
 
     function Ok($data, string $Message = "Operacion completada con exito"){
         $this->Code = 200;
-        $this->Message = $Message;
+        $this->Message = utf8_decode($Message);
         $this->Success = true;
         $this->data = $data;
 
-        header('Content-Type: application/json charset=utf-8 HTTP/1.1 200 OK');
         //return $this;
     }
 
-    function Error(int $Code = 500, $Message = "Error al realizar la operacion"){
+    function Error(int $Code = 500, $Message = "Error al realizar la operacion", $data = null){
         $this->Code = $Code;
-        $this->Message = $Message;
+        $this->Message = utf8_decode($Message);
         $this->Success = false;
-        $this->data = null;
+        $this->data = $data;
 
-        header('Content-Type: application/json HTTP/1.1 200 OK');
         //return $this;
     }
 
     function NotFound(int $Code = 404, $Message = "La direccion requerida no existe - 404 not found"){
         $this->Code = $Code;
-        $this->Message = $Message;
+        $this->Message = utf8_decode($Message);
         $this->Success = false;
         $this->data = null;
 
-        header('Content-Type: application/json HTTP/1.1 404 OK');
         //return $this;
     }
 }

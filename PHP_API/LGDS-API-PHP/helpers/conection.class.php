@@ -6,7 +6,7 @@ use mysqli;
 class conection
 {
     private string $servidor = "localhost";
-    private string $baseDatos = "la_garita_web";
+    private string $baseDatos = "la_garita_db";
     private string $user = "root";
     private string $password = "";
     public bool $success;
@@ -24,5 +24,11 @@ class conection
 
         if ($mysqli->connect_error)
             $this->success = false;
+    }
+
+    public function getLastInsert(string $table,string $id_column){
+
+        $sql_query = "SELECT ? as last_id FROM ? ORDER BY ? DESC LIMIT 1";
+        
     }
 }

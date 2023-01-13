@@ -36,18 +36,23 @@ class Controller
                         require_once $controllerPath;
 
                         try {
-
+                              
                               $controllerName = $controllerName . "Controller";
                               $controller = new $controllerName();
                               if (is_callable(array($controller, $actionName)) == false){
-                                    $serverResult->Error(495, "Ah ocurrido un error al realizar la peticion al servidor");
+                                    $serverResult->Error(500, "Ah ocurrido un error al realizar - el controlador o acceso no es correcto");
+                                    echo json_encode($serverResult);
                               }
                               else{
                                     call_user_func(array($controller, $actionName));
                               }
                         } 
                         catch (\Throwable $th) {
-                              $serverResult->NotFound(404,"Ah ocurrido un error al realizar la peticion al servidor");
+                              $serverResult->Error(
+                                    500,
+                                    "Ah ocurrido un error al realizar la peticion al servidor",
+                                    $th->getMessage()." - ".$th->getLine()." - ".$th->getFile()
+                              );
                               echo json_encode($serverResult);
                         }
 
@@ -59,7 +64,11 @@ class Controller
             } 
             catch (\Throwable $th) {
                   $serverResult = new HTTP_Response();
-                  $serverResult->Error(500, "Ah ocurrido un error inesperado");
+                  $serverResult->Error(
+                        500, 
+                        "Ah ocurrido un error inesperado",
+                        $th->getMessage()." - ".$th->getLine()." - ".$th->getFile()
+                  );
             }
 
       }
