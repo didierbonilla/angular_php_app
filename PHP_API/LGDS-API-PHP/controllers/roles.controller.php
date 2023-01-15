@@ -1,15 +1,15 @@
 <?php
 
-class departamentosController
+class rolesController
 {
     public array $public_access = array();
-    private GeneralServices $_GeneralServices;
+    private AccessServices $_AccessServices;
     private HTTP_Response $_serviceResult;
     private helpers $_helpers;
 
     function __construct()
     {
-        $this->_GeneralServices = new GeneralServices();
+        $this->_AccessServices = new AccessServices();
         $this->_serviceResult = new HTTP_Response();
         $this->_helpers = new helpers();
     }
@@ -17,9 +17,9 @@ class departamentosController
     //[GET_REQUEST]
     public function listar()
     {
-        $depa_id = isset($_GET["id"]) ? $_GET["id"] : null;
-        $depa_descripcion = isset($_GET["nombre"]) ? $_GET["nombre"] : null;
-        $listado = $this->_GeneralServices->list_state($depa_id,$depa_descripcion);
+        $rol_id = isset($_GET["id"]) ? $_GET["id"] : null;
+        $rol_descripcion = isset($_GET["nombre"]) ? $_GET["nombre"] : null;
+        $listado = $this->_AccessServices->list_role($rol_id,$rol_descripcion);
 
         echo json_encode($listado);
     }
@@ -32,8 +32,8 @@ class departamentosController
             $this->_serviceResult->Error(405, utf8_decode("metodo HTTP no permitido"));
             echo json_encode($this->_serviceResult);
         } else {
-            $state = new state($data);
-            $response = $this->_GeneralServices->create_state($state);
+            $role = new role($data);
+            $response = $this->_AccessServices->create_role($role);
             echo json_encode($response);
         }
     }
@@ -54,8 +54,8 @@ class departamentosController
                 $this->_serviceResult->Error(405, utf8_decode("metodo HTTP no permitido"));
                 echo json_encode($this->_serviceResult);
             } else {
-                $state = new state($data);
-                $response = $this->_GeneralServices->update_state($id,$state);
+                $role = new role($data);
+                $response = $this->_AccessServices->update_role($id,$role);
                 echo json_encode($response);
             }
         }
@@ -77,8 +77,7 @@ class departamentosController
                 $this->_serviceResult->Error(405, utf8_decode("metodo HTTP no permitido"));
                 echo json_encode($this->_serviceResult);
             } else {
-                $state = new state($data);
-                $response = $this->_GeneralServices->delete_state($id);
+                $response = $this->_AccessServices->delete_role($id);
                 echo json_encode($response);
             }
         }

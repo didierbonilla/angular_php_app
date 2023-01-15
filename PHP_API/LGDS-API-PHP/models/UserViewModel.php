@@ -21,7 +21,7 @@
         public ?string $usua_fechaModifica;
         public int $usua_activo;
 
-        function __construct($user){
+        function __construct($user,bool $showPassword = false){
 
             $this->usua_id = !isset($user["usua_id"]) ? 0 : $user["usua_id"];
             $this->usua_dni = !isset($user["usua_dni"]) ? null : $user["usua_dni"];
@@ -40,6 +40,10 @@
             $this->usua_modifica = !isset($user["usua_modifica"]) ? 0 : $user["usua_modifica"];
             $this->usua_fechaModifica = !isset($user["usua_fechaModifica"]) ? 0 : $user["usua_fechaModifica"];
             $this->usua_activo = !isset($user["usua_activo"]) ? 0 : $user["usua_activo"];
+
+            if($showPassword == true){
+                $this->usua_password = !isset($user["usua_password"]) ? null : $user["usua_password"];
+            }
         }
 
     }

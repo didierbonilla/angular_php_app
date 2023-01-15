@@ -2,6 +2,7 @@
 
 class usuariosController
 {
+    public array $public_access = array();
     private AccessServices $_AccessServices;
     private HTTP_Response $_serviceResult;
     private helpers $_helpers;
@@ -40,7 +41,7 @@ class usuariosController
             $this->_serviceResult->Error(405, utf8_decode("metodo HTTP no permitido"));
             echo json_encode($this->_serviceResult);
         } else {
-            $user = new user($data);
+            $user = new user($data,true);
             $user->usua_password = $data["usua_password"];
             $response = $this->_AccessServices->create_user($user);
             echo json_encode($response);
@@ -88,7 +89,7 @@ class usuariosController
                 $this->_serviceResult->Error(405, utf8_decode("metodo HTTP no permitido"));
                 echo json_encode($this->_serviceResult); 
             } else {
-                $user = new user($data);
+                $user = new user($data,true);
                 $response = $this->_AccessServices->update_password_user($id,$user);
                 echo json_encode($response); 
             }

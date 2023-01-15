@@ -38,6 +38,34 @@ class helpers
         }
     }
 
+    public function getCookie() : array | bool{
+        $headers = getallheaders();
+        $headers = str_replace(" ", "", $headers);
+
+        if(isset($headers["Cookie"])){
+            $headers = explode(";", $headers["Cookie"]);
+
+            $array_headers = array();
+            foreach ($headers as $header) {
+                $item = explode("=", $header);
+                $array_headers[$item[0]] = $item[1];
+            }
+
+            return $array_headers;
+        }
+        else return false;
+        
+    }
+
+    public function getHeaderByName($name){
+        $headers = getallheaders();
+        if (isset($headers[$name])) {
+            return $headers[$name];
+        }else{
+            return null;
+        }
+    }
+
     public function filterArray($array,$callback) : array{
         $array_filter = array();
         foreach ($array as $item) {

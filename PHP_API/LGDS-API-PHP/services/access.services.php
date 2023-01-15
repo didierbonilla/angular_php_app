@@ -3,16 +3,18 @@
 class AccessServices{
 
     private conection $conection;
-    private userRepository $userRepository;
     private helpers $_helpers;
+    private userRepository $userRepository;
+    private roleRepository $roleRepository;
 
     function __construct(){
         $conection = new conection();
 
         if ($conection->success) {
             $this->conection = new conection();
-            $this->userRepository = new userRepository($this->conection->mysqli);
             $this->_helpers = new helpers();
+            $this->userRepository = new userRepository($this->conection->mysqli);
+            $this->roleRepository = new roleRepository($this->conection->mysqli);
         }
         else {
             $servicesResult = new HTTP_Response();
@@ -87,7 +89,7 @@ class AccessServices{
 
     function update_password_user($id, user $user) : HTTP_Response{
         $servicesResult = new HTTP_Response();
-
+        
         $response = $this->userRepository->update_password($id,$user);
         if($response["udp_code"] > 0){
             $servicesResult->Error(500,"Error en peticion a base de datos - mysql code: ".$response["udp_code"]);
@@ -111,4 +113,80 @@ class AccessServices{
         return $servicesResult;
     }
 
+    //--------------------------------------------------------- ROLE BLOCK ----------------------------------------------------------
+    function list_role($role_id, $role) : HTTP_Response{
+
+        $servicesResult = new HTTP_Response();
+        $roleList = $this->roleRepository->list();
+
+        if(!empty($role_id)){
+            $roleList = $this->roleRepository->find($role_id);
+        }
+        else if(!empty($role)){
+            $roleList = $this->roleRepository->find($role,"rol_descripcion");
+        }
+
+        $servicesResult->Ok($roleList);
+        return $servicesResult;
+    }
+
+    function create_role(role $role) : HTTP_Response{
+        $servicesResult = new HTTP_Response();
+
+        $exist = $this->roleRepository->find($role->rol_descripcion,"rol_descripcion");
+        if( count($exist) > 0 ){
+            $servicesResult->Error(500,"Ya existe un rol con este nombre"); 
+        }
+        else{
+            $response = $this->roleRepository->create($role);
+            if($response["udp_code"] > 0){
+                $servicesResult->Error(500,"Error en peticion a base de datos - mysql error code: " . $response["udp_code"]);
+            } else{
+                $servicesResult->Ok($response);
+            }
+        }
+                   
+
+        return $servicesResult;
+    }
+    
+    function update_role(int $id, role $role) : HTTP_Response{
+        $servicesResult = new HTTP_Response();
+
+        $exist = $this->roleRepository->find($id);
+        if( count($exist) == 0 ){
+            $servicesResult->Error(500,"El registro requerido no existe"); 
+        }
+        else{
+            $response = $this->roleRepository->update($id,$role);
+            if($response["udp_code"] > 0){
+                $servicesResult->Error(500,"Error en peticion a base de datos - mysql error code: " . $response["udp_code"]);
+            } else{
+                $servicesResult->Ok($response);
+            }
+        }         
+
+        return $servicesResult;
+    }
+
+    function delete_role(int $id) : HTTP_Response{
+        $servicesResult = new HTTP_Response();
+
+        $exist = $this->roleRepository->find($id);
+        if( count($exist) == 0 ){
+            $servicesResult->Error(500,"El registro requerido no existe"); 
+        }
+        else{
+            $response = $this->roleRepository->delete($id);
+            if($response["udp_code"] > 0){
+                $servicesResult->Error(500,"Error en peticion a base de datos - mysql error code: " . $response["udp_code"]);
+            } else{
+                $servicesResult->Ok($response);
+            }
+        }         
+
+        return $servicesResult;
+    }
+
+    //---------------------------------------------------------  BLOCK ----------------------------------------------------------
 }

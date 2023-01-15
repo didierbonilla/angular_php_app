@@ -2,6 +2,7 @@
 
 class municipiosController
 {
+    public array $public_access = array();
     private GeneralServices $_GeneralServices;
     private HTTP_Response $_serviceResult;
     private helpers $_helpers;

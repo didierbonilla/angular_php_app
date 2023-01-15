@@ -132,7 +132,7 @@ class userRepository{
         $response = array();
 
         $password = password_hash($user->usua_password, PASSWORD_DEFAULT);
-        $query = "UPDATE `tblusuarios` as usua SET usua.`usua_password`= ? WHERE usua.usua_id=?;";
+        $query = "UPDATE `tblusuarios` as usua SET usua.usua_password= ? WHERE usua.usua_id=?;";
 
         if($stmt = $this->conection->prepare($query)){
             $stmt->bind_param("ss",$password,$id);
@@ -166,17 +166,21 @@ class userRepository{
 
         return $response;
     }
+    
+    function getPassword(string $column, string $value){
+
+        $password = null;
+        $query = "SELECT usua.usua_password FROM `tblusuarios` as usua WHERE usua.usua_dni = ?";
+
+        if($stmt = $this->conection->prepare($query)){
+            $stmt->bind_param("s",$value);
+            $stmt->execute();
+
+            $stmt->bind_result($password);
+            $stmt->fetch();
+        }
+
+        return $password;
+    }
 
 }
-/*
-$pdo = new PDO("mysql:dbname=la_garita_web;host=localhost", "root", "");
-$query = 
-    "SELECT * FROM `usuarios` as usu
-    JOIN perfiles as per ON per.idperfil = usu.idperfil";
-$stmt = $pdo->prepare($query);
-$arrParams=array(2);
-$stmt ->execute($arrParams);
-
-$stmt->setFetchMode(PDO::FETCH_SERIALIZE, 'user');
-$data = $stmt->fetch();
-echo var_dump($data);*/
