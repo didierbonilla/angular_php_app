@@ -17,6 +17,7 @@ class main{
         include_once("models/StateViewModel.php");
         include_once("models/CityViewModel.php");
         include_once("models/RoleViewModel.php");
+        include_once("models/ClientViewModel.php");
     }
 
     function getRepositories(){
@@ -24,12 +25,14 @@ class main{
         include_once("repositories/state.repository.php");
         include_once("repositories/city.repository.php");
         include_once("repositories/role.repository.php");
+        include_once("repositories/client.repository.php");
     }
 
     function getServices(){
         include_once("services/auth.services.php");
         include_once("services/general.services.php");
         include_once("services/access.services.php");
+        include_once("services/sales.services.php");
     }
 }
 
