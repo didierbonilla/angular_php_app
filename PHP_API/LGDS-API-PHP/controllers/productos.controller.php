@@ -1,6 +1,6 @@
 <?php
 
-class clientesController
+class productosController
 {
     public array $public_access = array();
     private SaleServices $_SaleServices;
@@ -19,8 +19,9 @@ class clientesController
     {
         $id_cateogria = isset($_GET["categoria"]) ? $_GET["categoria"] : 1;
         $id_usuario = isset($_GET["usuario"]) ? $_GET["usuario"] : null;
+        $estado = isset($_GET["estado"]) ? $_GET["estado"] : null;
 
-        $listado = $this->_SaleServices->list_product($id_usuario,$id_cateogria);
+        $listado = $this->_SaleServices->list_product($id_usuario,$id_cateogria,$estado);
         echo json_encode($listado);
     }
 
@@ -29,8 +30,9 @@ class clientesController
         $id_producto = isset($_GET["id"]) ? $_GET["id"] : null;
         $producto = isset($_GET["nombre"]) ? $_GET["nombre"] : null;
         $id_usuario = isset($_GET["usuario"]) ? $_GET["usuario"] : null;
+        $estado = isset($_GET["estado"]) ? $_GET["estado"] : 1;
 
-        $response = $this->_SaleServices->find_product($id_producto, $producto, $id_usuario);
+        $response = $this->_SaleServices->find_product($id_producto, $producto, $id_usuario,$estado);
         echo json_encode($response);
     }
 
@@ -102,34 +104,25 @@ class clientesController
     //[PUT_REQUEST]
     public function actualizar_stock()
     {
-        $id = isset($_GET["id"]) ? $_GET["id"] : null;
-        $id_usuario = isset($_GET["usuario"]) ? $_GET["usuario"] : null;
-        $accion = isset($_GET["accion"]) ? $_GET["accion"] : 0;
+        $accion_stock = isset($_GET["accion_stock"]) ? $_GET["accion_stock"] : null;
+        $data = $this->_helpers->getBodyContent("PUT");
 
-        if (empty($id)) {
-            $this->_serviceResult->Error(400, utf8_decode("parametro: id esta vacio"));
+        if ($accion_stock == null) {
+            $this->_serviceResult->Error(400, utf8_decode("parametro: accion esta vacio - posibles opciones: 1 (sumar), 0 (restar)"));
             echo json_encode($this->_serviceResult);
         } 
-        else if (empty($id_usuario)) {
-            $this->_serviceResult->Error(400, utf8_decode("parametro: usuario esta vacio"));
-            echo json_encode($this->_serviceResult);
-        } 
-        else if (empty($accion)) {
-            $this->_serviceResult->Error(400, utf8_decode("parametro: accion esta vacio"));
-            echo json_encode($this->_serviceResult);
-        } 
-        else if($accion != 1 && $accion != 0){
+        else if($accion_stock != 1 && $accion_stock != 0){
             $this->_serviceResult->Error(400, utf8_decode("parametro: accion es invalido - posibles opciones: 1 (sumar), 0 (restar)"));
             echo json_encode($this->_serviceResult);
         }
         else {
             
-            $data = $this->_helpers->getBodyContent("PUT");
             if ($data == 1) {
                 $this->_serviceResult->Error(405, utf8_decode("metodo HTTP no permitido"));
                 echo json_encode($this->_serviceResult);
             } else {
-                $response = $this->_SaleServices->setStock_product($id,$id_usuario,$accion);
+                $product = new product($data);
+                $response = $this->_SaleServices->setStock_product($product, floatval($data["cantidad"]), $accion_stock);
                 echo json_encode($response);
             }
         }

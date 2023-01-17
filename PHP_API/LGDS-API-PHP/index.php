@@ -19,6 +19,7 @@ class main{
         include_once("models/RoleViewModel.php");
         include_once("models/ClientViewModel.php");
         include_once("models/CategoryViewModel.php");
+        include_once("models/ProductViewModel.php");
     }
 
     function getRepositories(){
@@ -28,6 +29,7 @@ class main{
         include_once("repositories/role.repository.php");
         include_once("repositories/client.repository.php");
         include_once("repositories/category.repository.php");
+        include_once("repositories/product.repository.php");
     }
 
     function getServices(){

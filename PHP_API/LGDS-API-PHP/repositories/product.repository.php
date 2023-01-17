@@ -9,7 +9,7 @@ class productRepository
         $this->conection = $mysqli;
     }
 
-    function list(int $usua_id){
+    function list($usua_id){
     
         $data = array();
         $query = 
@@ -37,7 +37,7 @@ class productRepository
         return $data;
     }
 
-    function find($value, int $usua_id, string $column="prod_id"){
+    function find($value, $usua_id, string $column="prod_id"){
 
         $products = $this->list($usua_id);
         $products_filter = array();
@@ -106,7 +106,7 @@ class productRepository
                 `prod_precioVenta`=?,
                 `cate_id`=?,
                 `prod_usuarioModifica`=?,
-                `prod_fechaModifica`= CURRENT_TIMESTAMP,
+                `prod_fechaModifica`= CURRENT_TIMESTAMP
              WHERE `prod_id`=? AND `usua_id`=?";
 
         if($stmt = $this->conection->prepare($query)){
@@ -135,6 +135,7 @@ class productRepository
             "usua_id": 0
         }
         */
+
         $response = array();
         $query = "UPDATE `tblproductos` as prod SET prod.`prod_stock`= (prod.prod_stock + ?)  WHERE prod.`prod_id`=? AND prod.`usua_id`=?";
         if($add == false){
@@ -145,7 +146,7 @@ class productRepository
             $stmt->bind_param("dii", $cantidad, $product->prod_id, $product->usua_id);
             $stmt->execute();
             $response["udp_code"] = 0;
-            $response["udp_message"] = "Producto actualizado con exito";
+            $response["udp_message"] = "Stock de producto actualizado con exito";
         }
         else {
             $response["udp_code"] = $stmt->errno;
@@ -155,7 +156,7 @@ class productRepository
         return $response;
     }
 
-    function setState(int $id, int $usua_id, int $state) : array{
+    function setState($id, $usua_id, $state) : array{
 
         $response = array();
         $query = "UPDATE `tblproductos` SET `prod_estado`= ?  WHERE `prod_id`=? AND `usua_id`=?";

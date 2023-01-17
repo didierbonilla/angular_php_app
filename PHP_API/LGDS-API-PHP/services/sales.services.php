@@ -231,28 +231,43 @@ class SaleServices
 
     /* #region PRODUCT BLOCK */
 
-    function list_product($user_id, $category_id) : HTTP_Response{
+    function list_product($user_id, $category_id, $estado) : HTTP_Response{
 
         $servicesResult = new HTTP_Response();
         $productList = $this->productRepository->list($user_id);
 
+        if(!empty($estado)){
+            $productList = $this->productRepository->find($estado,$user_id,"prod_estado");
+        }
+
         if(!empty($category_id)){
-            $productList = $this->productRepository->find($category_id, $user_id,"cate_id");
+            $productList = array_values(array_filter($productList, function (product $item) use ($category_id) {
+                return $item->cate_id == $category_id;
+            }));
         }
 
         $servicesResult->Ok($productList);
         return $servicesResult;
     }
 
-    function find_product($product_id, $product_name, $user_id) : HTTP_Response{
+    function find_product($product_id, $product_name, $user_id, $estado) : HTTP_Response{
         $servicesResult = new HTTP_Response();
         $productList = array();
 
+        $productList = $this->productRepository->list($user_id);
+        if(!empty($estado)){
+            $productList = $this->productRepository->find($estado,$user_id,"prod_estado");
+        }
+
         if(!empty($product_id)){
-            $productList = $this->productRepository->find($product_id, $user_id);
+            $productList = array_values(array_filter($productList, function (product $item) use ($product_id) {
+                return $item->prod_id == $product_id;
+            }));
         }
         else if(!empty($product_name)){
-            $productList = $this->productRepository->find($product_name, $user_id, "prod_descripcion");
+            $productList = array_values(array_filter($productList, function (product $item) use ($product_name) {
+                return $item->prod_nombre == $product_name;
+            }));
         }
 
         $servicesResult->Ok($productList);
@@ -268,8 +283,12 @@ class SaleServices
         }));
         $exist_category = $this->categoryRepository->find($product->cate_id, $product->usua_id);
 
+
         if(count($exist_category) == 0){
             $servicesResult->Error(500,"La categoria especificada no existe en la lista");
+        }
+        else if(count($exist_product) > 0 && $exist_product[0]->prod_estado == 0){
+            $servicesResult->Error(500,"Ya existe un producto con el nombre y categoria especificada en estado inactivo en la lista");
         }
         else if(count($exist_product) > 0){
             $servicesResult->Error(500,"Ya existe un producto con el nombre y categoria especificada en la lista");
@@ -287,7 +306,7 @@ class SaleServices
         return $servicesResult;
     }
 
-    function update_product(int $id, product $product) : HTTP_Response{
+    function update_product($id, product $product) : HTTP_Response{
         $servicesResult = new HTTP_Response();
 
         $exist_product = $this->productRepository->find($id, $product->usua_id);
@@ -296,7 +315,10 @@ class SaleServices
         if(count($exist_category) == 0){
             $servicesResult->Error(500,"La categoria especificada no existe en la lista");
         }
-        if(count($exist_product) == 0){
+        else if(count($exist_product) > 0 && $exist_product[0]->prod_estado == 0){
+            $servicesResult->Error(500,"El producto seleccionado se encuentra en estado inactivo");
+        }
+        else if(count($exist_product) == 0){
             $servicesResult->Error(500,"El registro requerido no existe");
         }
         else{
@@ -311,12 +333,21 @@ class SaleServices
         return $servicesResult;
     }
 
-    function setStock_product(product $product,int $unit, bool $add) : HTTP_Response{
+    function setStock_product(product $product,float $unit, bool $add) : HTTP_Response{
         $servicesResult = new HTTP_Response();
+        $exist_product = $this->productRepository->find($product->prod_id, $product->usua_id);
 
-        $exist = $this->productRepository->find($product->prod_id, $product->usua_id);
-        if(count($exist) == 0){
+        if(count($exist_product) > 0 && $exist_product[0]->prod_estado == 0){
+            $servicesResult->Error(500,"El producto seleccionado se encuentra en estado inactivo");
+        }
+        else if(count($exist_product) == 0){
             $servicesResult->Error(500,"El registro requerido no existe");
+        }
+        else if($add == false && $unit > $exist_product[0]->prod_stock ){
+            $servicesResult->Error(
+                500, 
+                "La cantidad requerida de {$exist_product[0]->prod_nombre} no es suficiente, restante: {$exist_product[0]->prod_stock}"
+            );
         }
         else{
             $response =  $this->productRepository->setStock($product, $unit, $add);
@@ -330,7 +361,7 @@ class SaleServices
         return $servicesResult;
     }
 
-    function setState_product(int $id, int $usua_id, int $state) : HTTP_Response{
+    function setState_product($id, $usua_id, $state) : HTTP_Response{
         $servicesResult = new HTTP_Response();
 
         $exist = $this->productRepository->find($id, $usua_id);
