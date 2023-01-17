@@ -1,15 +1,15 @@
 <?php
 
-class departamentosController
+class categoriasController
 {
     public array $public_access = array();
-    private GeneralServices $_GeneralServices;
+    private SaleServices $_SaleServices;
     private HTTP_Response $_serviceResult;
     private helpers $_helpers;
 
     function __construct()
     {
-        $this->_GeneralServices = new GeneralServices();
+        $this->_SaleServices = new SaleServices();
         $this->_serviceResult = new HTTP_Response();
         $this->_helpers = new helpers();
     }
@@ -17,9 +17,20 @@ class departamentosController
     //[GET_REQUEST]
     public function listar()
     {
-        $depa_id = isset($_GET["id"]) ? $_GET["id"] : null;
-        $depa_descripcion = isset($_GET["nombre"]) ? $_GET["nombre"] : null;
-        $listado = $this->_GeneralServices->list_state($depa_id,$depa_descripcion);
+        $usua_id = isset($_GET["usuario"]) ? $_GET["usuario"] : null;
+        $listado = $this->_SaleServices->list_category($usua_id);
+
+        echo json_encode($listado);
+    }
+
+    //[GET_REQUEST]
+    public function buscar()
+    {
+        $categori_id = isset($_GET["id"]) ? $_GET["id"] : null;
+        $categori_name = isset($_GET["nombre"]) ? $_GET["nombre"] : null;
+        $user_id = isset($_GET["usuario"]) ? $_GET["usuario"] : null;
+
+        $listado = $this->_SaleServices->find_category($categori_id, $categori_name, $user_id);
 
         echo json_encode($listado);
     }
@@ -32,8 +43,8 @@ class departamentosController
             $this->_serviceResult->Error(405, utf8_decode("metodo HTTP no permitido"));
             echo json_encode($this->_serviceResult);
         } else {
-            $state = new state($data);
-            $response = $this->_GeneralServices->create_state($state);
+            $category = new category($data);
+            $response = $this->_SaleServices->create_category($category);
             echo json_encode($response);
         }
     }
@@ -54,8 +65,8 @@ class departamentosController
                 $this->_serviceResult->Error(405, utf8_decode("metodo HTTP no permitido"));
                 echo json_encode($this->_serviceResult);
             } else {
-                $state = new state($data);
-                $response = $this->_GeneralServices->update_state($id,$state);
+                $category = new category($data);
+                $response = $this->_SaleServices->update_category($id,$category);
                 echo json_encode($response);
             }
         }
@@ -65,9 +76,14 @@ class departamentosController
     public function eliminar()
     {
         $id = isset($_GET["id"]) ? $_GET["id"] : null;
+        $id_usuario = isset($_GET["usuario"]) ? $_GET["usuario"] : null;
 
         if (empty($id)) {
             $this->_serviceResult->Error(400, utf8_decode("parametro: id esta vacio"));
+            echo json_encode($this->_serviceResult);
+        } 
+        else if (empty($id_usuario)) {
+            $this->_serviceResult->Error(400, utf8_decode("parametro: usuario esta vacio"));
             echo json_encode($this->_serviceResult);
         } 
         else {
@@ -77,7 +93,7 @@ class departamentosController
                 $this->_serviceResult->Error(405, utf8_decode("metodo HTTP no permitido"));
                 echo json_encode($this->_serviceResult);
             } else {
-                $response = $this->_GeneralServices->delete_state($id);
+                $response = $this->_SaleServices->delete_category($id,$id_usuario);
                 echo json_encode($response);
             }
         }

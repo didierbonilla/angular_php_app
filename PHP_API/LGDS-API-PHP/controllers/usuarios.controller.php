@@ -13,7 +13,7 @@ class usuariosController
         $this->_serviceResult = new HTTP_Response();
         $this->_helpers = new helpers();
     }
- 
+
     //[GET_REQUEST]
     public function listar()
     {
