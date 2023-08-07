@@ -2,6 +2,9 @@
 
 
 header('Content-Type: application/json charset=utf-8 HTTP/1.1 200 OK');
+header('Access-Control-Allow-Origin: *');
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+header("Access-Control-Allow-Headers: bearer_token, session_id, Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 class main{
 
@@ -40,13 +43,18 @@ class main{
     }
 }
 
-session_start();
-
 $_main = new main();
 $_main->getHelpers();
 $_main->getModels();
 $_main->getRepositories();
 $_main->getServices();
+
+$_helpers = new helpers();
+$session_id = $_helpers->getHeaderByName("session_id");
+if($session_id != null){
+    session_id($session_id);
+}
+session_start();
 
 include_once("controllers/controller.class.php");
 $_Controller = new Controller();

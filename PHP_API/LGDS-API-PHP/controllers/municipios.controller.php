@@ -20,7 +20,8 @@ class municipiosController
         $muni_id = isset($_GET["id"]) ? $_GET["id"] : null;
         $muni_descripcion = isset($_GET["nombre"]) ? $_GET["nombre"] : null;
         $depa_id = isset($_GET["id_departamento"]) ? $_GET["id_departamento"] : null;
-        $listado = $this->_GeneralServices->list_city($muni_id,$muni_descripcion,$depa_id);
+        $agrupar = isset($_GET["agrupar"]) ? true : false;
+        $listado = $this->_GeneralServices->list_city($muni_id,$muni_descripcion,$depa_id, $agrupar);
 
         echo json_encode($listado);
     }

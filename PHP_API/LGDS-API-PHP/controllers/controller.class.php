@@ -66,6 +66,7 @@ class Controller
 
                                     // si no existe una sesion o token de acceso
                                     if( !isset($_SESSION["token"]) || $token == null ){
+
                                           $serverResult->Error(401, "Token de acceso invalido o expirado");
                                           echo json_encode($serverResult);
                                     }

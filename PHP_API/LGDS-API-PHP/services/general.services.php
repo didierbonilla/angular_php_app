@@ -113,12 +113,21 @@ class GeneralServices{
 
 //--------------------------------------------------------- CITIES BLOCK ----------------------------------------------------------
 
-    function list_city($city_id, $city, $state_id) : HTTP_Response{
+    function list_city($city_id, $city, $state_id, $group) : HTTP_Response{
 
         $servicesResult = new HTTP_Response();
         $citiesList = $this->cityRepository->list();
 
-        if(!empty($city_id)){
+        if($group == true){
+            $statesList = $this->stateRepository->list();
+            foreach ( $statesList as $state) {
+                $state_cities = $this->cityRepository->find($state->depa_id,"depa_id");
+                $state->municipios = $state_cities;
+            }
+
+            $citiesList = $statesList;
+        }
+        else if(!empty($city_id)){
             $citiesList = $this->cityRepository->find($city_id);
         }
         else if(!empty($city)){

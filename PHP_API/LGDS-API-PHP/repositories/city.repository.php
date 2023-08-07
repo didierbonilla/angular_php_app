@@ -55,7 +55,7 @@ class cityRepository
         if($stmt = $this->conection->prepare($query)){
             $stmt->bind_param("ss", $city->muni_descripcion, $city->depa_id);
             $stmt->execute();
-            $response["udp_inserted_id"] = mysqli_insert_id($this->conection);;
+            $response["udp_inserted_id"] = mysqli_insert_id($this->conection);
             $response["udp_code"] = 0;
             $response["udp_message"] = "Municipio creado con exito";
         } 

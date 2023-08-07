@@ -62,20 +62,26 @@ class AuthServices{
 
         if(count($user) > 0){
 
-            if($user[0]->usua_activo == 1){
+            $user = current($user);
+            if($user->usua_activo == 1){
 
-                $user[0]->usua_password = $this->userRepository->getPassword("usua_dni", $login_data->usua_dni);
+                $user->usua_password = $this->userRepository->getPassword("usua_dni", $login_data->usua_dni);
 
-                if( password_verify($login_data->usua_password, $user[0]->usua_password) ){
+                if( password_verify($login_data->usua_password, $user->usua_password) ){
 
                     // generate token and authentication cookie
-                    unset($user[0]->usua_password);
-                    $jwt = $this->getToken($user[0], $this->expire_token_time);
+                    unset($user->usua_password);
+                    $jwt = $this->getToken($user, $this->expire_token_time);
                     setcookie("token", $jwt, $this->expire_token_time, "/");
                     $_SESSION["token"] = $jwt;
 
+                    $login_response = array(
+                        "token"=>$_SESSION["token"],
+                        "session_id"=>session_id()
+                    );
                     // get and return response
-                    $servicesResult->Ok($jwt, "Inicio de sesion completado exitosamente");
+                    $servicesResult->Ok($login_response, "Inicio de sesion completado exitosamente");
+
                 }
                 else{
                     $servicesResult->Error(500, "la clave ingresada es incorrecta");
@@ -88,7 +94,7 @@ class AuthServices{
 
         }
         else{
-            $servicesResult->Error(500, "el DNI ingresado es incorrecto o inexistente");
+            $servicesResult->Error(500, "el DNI '{$login_data->usua_dni}' es incorrecto o inexistente");
         }
 
         return $servicesResult;
